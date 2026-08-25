@@ -1,4 +1,7 @@
 
+using AnyCard.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace AnyCard
 {
     public class Program
@@ -6,6 +9,9 @@ namespace AnyCard
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            var connectionString = builder.Configuration.GetConnectionString("AnyCardDb");
+            builder.Services.AddDbContext<AnyCardDbContext>(options => options.UseNpgsql(connectionString));
 
             // Add services to the container.
 
