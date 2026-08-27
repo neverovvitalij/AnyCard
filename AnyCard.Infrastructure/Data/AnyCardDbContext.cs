@@ -16,5 +16,9 @@ public class AnyCardDbContext : DbContext
         modelBuilder.Entity<CardProgress>()
             .HasIndex(cp => new { cp.CardId, cp.UserId })
             .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
     }
 }

@@ -1,5 +1,7 @@
 
+using AnyCard.Application.Interfaces;
 using AnyCard.Infrastructure.Data;
+using AnyCard.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnyCard
@@ -12,6 +14,8 @@ namespace AnyCard
 
             var connectionString = builder.Configuration.GetConnectionString("AnyCardDb");
             builder.Services.AddDbContext<AnyCardDbContext>(options => options.UseNpgsql(connectionString));
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             // Add services to the container.
 

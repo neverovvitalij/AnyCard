@@ -12,11 +12,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyCard.Application", "AnyCard.Application\AnyCard.Application.csproj", "{32597064-9A4C-4C73-BEB1-BA921BA279A5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{72CF5F5B-D4A1-4B85-9ABC-48526B4F6425} = {72CF5F5B-D4A1-4B85-9ABC-48526B4F6425}
-		{B811B206-EF41-4C29-A09E-5040FD43F301} = {B811B206-EF41-4C29-A09E-5040FD43F301}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyCard.Infrastructure", "AnyCard.Infrastructure\AnyCard.Infrastructure.csproj", "{B811B206-EF41-4C29-A09E-5040FD43F301}"
 	ProjectSection(ProjectDependencies) = postProject
+		{32597064-9A4C-4C73-BEB1-BA921BA279A5} = {32597064-9A4C-4C73-BEB1-BA921BA279A5}
 		{72CF5F5B-D4A1-4B85-9ABC-48526B4F6425} = {72CF5F5B-D4A1-4B85-9ABC-48526B4F6425}
 	EndProjectSection
 EndProject

@@ -3,6 +3,7 @@ using System;
 using AnyCard.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AnyCard.Infrastructure.Migrations
 {
     [DbContext(typeof(AnyCardDbContext))]
-    partial class AnyCardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260827115316_AddUniqueIndexOnUsername")]
+    partial class AddUniqueIndexOnUsername
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
