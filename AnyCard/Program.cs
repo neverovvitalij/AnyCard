@@ -16,6 +16,7 @@ namespace AnyCard
             builder.Services.AddDbContext<AnyCardDbContext>(options => options.UseNpgsql(connectionString));
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
             // Add services to the container.
 
