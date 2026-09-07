@@ -2,6 +2,7 @@ using AnyCard.Application.Common;
 using AnyCard.Application.Interfaces;
 using AnyCard.Infrastructure.Data;
 using AnyCard.Infrastructure.Repositories;
+using AnyCard.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -20,6 +21,7 @@ namespace AnyCard
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICardRepository, CardRepository>();
             builder.Services.AddScoped<ICardProgressRepository, CardProgressRepository>();
