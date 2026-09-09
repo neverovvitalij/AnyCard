@@ -17,13 +17,15 @@ public class CardRepository : ICardRepository
     {
         await _anyCardDbContext.Cards.AddAsync(card);
     }
-    public async Task<List<Card>> GetAllAsync()
+    public async Task<List<Card>> GetAllAsync(int userId)
     {
-        return await _anyCardDbContext.Cards.ToListAsync();
+        return await _anyCardDbContext.Cards.Include(c => c.Category).Where(c => c.UserId == userId).ToListAsync();
     }
-    public async Task<Card?> GetByIdAsync(int id)
+    public async Task<Card?> GetByIdAsync(int id, int userId)
     {
-        return await _anyCardDbContext.Cards.FindAsync(id);
+        return await _anyCardDbContext.Cards
+            .Include(c => c.Category)
+            .Where(c => c.Id == id && c.UserId == userId).FirstOrDefaultAsync();
     }
     public async Task<bool> SaveChangesAsync()
     {

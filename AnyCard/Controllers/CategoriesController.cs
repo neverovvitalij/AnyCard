@@ -1,12 +1,14 @@
 ﻿using AnyCard.Application.Interfaces;
 using AnyCard.Domain.Model;
 using AnyCard.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnyCard.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
