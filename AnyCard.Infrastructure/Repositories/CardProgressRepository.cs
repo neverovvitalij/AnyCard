@@ -28,7 +28,7 @@ public class CardProgressRepository : ICardProgressRepository
     }
     public async Task<List<CardProgress>> GetDueForReviewAsync(int userId)
     {
-        return await _anyCardDbContext.CardProgresses.Include(cp => cp.Card)
+        return await _anyCardDbContext.CardProgresses.Include(cp => cp.Card).ThenInclude(c => c.Category)
             .Where(cp => cp.UserId == userId && cp.NextShowtime <= DateTime.UtcNow).ToListAsync();
     }
 }
