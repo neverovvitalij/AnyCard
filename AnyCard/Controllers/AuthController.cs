@@ -118,4 +118,17 @@ public class AuthController : ControllerBase
         var authResponseDto = new AuthResponseDto(refreshToken, accessToken);
         return Ok(authResponseDto);
     }
+
+    [HttpPost("logout")]
+    public async Task<ActionResult> Logout(RefreshDto refreshDto)
+    {
+        var existRefreshToken = await _refreshTokenRepository.GetByTokenAsync(refreshDto.RefreshToken);
+        if(existRefreshToken != null)
+        {
+        existRefreshToken.IsRevoked = true;
+        await _refreshTokenRepository.SaveChangesAsync();
+        }
+
+        return NoContent();
+    }
 }
