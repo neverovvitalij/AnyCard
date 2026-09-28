@@ -1,8 +1,10 @@
-﻿using AnyCard.Application.Interfaces;
+﻿using AnyCard.Application.Extensions;
+using AnyCard.Application.Interfaces;
 using AnyCard.Domain.Model;
 using AnyCard.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AnyCard.Controllers;
 
@@ -21,7 +23,8 @@ public class CategoriesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll()
     {
-        var categories =  await _categoryRepository.GetAllAsync();
+        var userId = User.GetUserId();
+        var categories =  await _categoryRepository.GetAllAsync(userId);
         var categoriesDto = categories.Select(c => new CategoryDto(c.Id, c.Name)).ToList();
         return Ok(categoriesDto);
     }
@@ -29,7 +32,8 @@ public class CategoriesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<CategoryDto?>> GetById(int id)
     {
-        var category = await _categoryRepository.GetByIdAsync(id);
+        var userId = User.GetUserId();
+        var category = await _categoryRepository.GetByIdAsync(id, userId);
         if(category == null)
         {
             return NotFound("Kein Kategorie gefunden");
@@ -41,9 +45,16 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<CategoryDto>> CreateCategory(CreateCategoryDto createCategoryDto)
     {
-        var category = new Category { Name = createCategoryDto.Name };
+        var userId = User.GetUserId();
+        var category = new Category { Name = createCategoryDto.Name, UserId = userId };
+        try
+        {
         await _categoryRepository.AddAsync(category);
         await _categoryRepository.SaveChangesAsync();
+        } catch(DbUpdateException)
+        {
+            return Conflict("Diese Kategorie existiert bereits.");
+        }
 
         var categoryDto = new CategoryDto(category.Id, category.Name);
         return CreatedAtAction(nameof(GetById), new { id = category.Id }, categoryDto);
@@ -52,13 +63,21 @@ public class CategoriesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<CategoryDto>> UpdateCategory(int id, CreateCategoryDto createCategoryDto)
     {
-        var category = await _categoryRepository.GetByIdAsync(id);
+        var userId = User.GetUserId();
+        var category = await _categoryRepository.GetByIdAsync(id, userId);
         if(category == null)
         {
             return NotFound("Kein Kategorie gefunden");
         }
         category.Name = createCategoryDto.Name;
+        try
+        {
         await _categoryRepository.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict("Diese Kategorie existiert bereits.");
+        }
 
         var categoryDto = new CategoryDto(category.Id, category.Name);
         return Ok(categoryDto);
@@ -67,7 +86,8 @@ public class CategoriesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteCategory(int id)
     {
-        var category = await _categoryRepository.GetByIdAsync(id);
+        var userId = User.GetUserId();
+        var category = await _categoryRepository.GetByIdAsync(id, userId);
         if (category == null)
         {
             return NotFound("Kein Kategorie gefunden");

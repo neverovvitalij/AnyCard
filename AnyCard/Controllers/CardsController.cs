@@ -53,7 +53,7 @@ public class CardsController : ControllerBase
     public async Task<ActionResult<CardDto>> CreateCard(CreateCardDto createCardDto)
     {
         var userId = User.GetUserId();
-        var category = await _categoryRepository.GetByIdAsync(createCardDto.CategoryId);
+        var category = await _categoryRepository.GetByIdAsync(createCardDto.CategoryId, userId);
         if(category == null)
         {
             return NotFound();
@@ -66,12 +66,10 @@ public class CardsController : ControllerBase
             CategoryId = createCardDto.CategoryId,
             UserId = userId
         };
-        await _cardRepository.AddAsync(card);
-        await _cardRepository.SaveChangesAsync();
 
         var cardProgress = new CardProgress
         {
-            CardId = card.Id,
+            Card = card,
             UserId = userId,
             NextShowtime = DateTime.UtcNow,
             UserRating = UserRating.Again,
@@ -95,7 +93,7 @@ public class CardsController : ControllerBase
             return NotFound("Die Karte wurde nicht gefunden");
         }
         
-        var category = await _categoryRepository.GetByIdAsync(createCardDto.CategoryId);
+        var category = await _categoryRepository.GetByIdAsync(createCardDto.CategoryId, userId);
         if (category == null)
         {
             return NotFound("Die Kategorie wurde nicht gefunden");

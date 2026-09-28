@@ -20,5 +20,9 @@ public class AnyCardDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
             .IsUnique();
+        
+        modelBuilder.Entity<Category>()
+            .HasIndex(c => new { c.UserId, c.Name})
+            .IsUnique();
     }
 }

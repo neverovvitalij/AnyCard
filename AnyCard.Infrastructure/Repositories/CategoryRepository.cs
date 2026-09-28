@@ -14,17 +14,17 @@ public class CategoryRepository : ICategoryRepository
         _anyCardDbContext = anyCardDbContext;
     }
 
-    public async Task<List<Category>> GetAllAsync()
+    public async Task<List<Category>> GetAllAsync(int userId)
     {
-        return await _anyCardDbContext.Categories.ToListAsync();
+        return await _anyCardDbContext.Categories.Where(c => c.UserId == userId).ToListAsync();
     }
     public async Task AddAsync(Category category)
     {
         await _anyCardDbContext.Categories.AddAsync(category);
     }
-    public async Task<Category?> GetByIdAsync(int id)
+    public async Task<Category?> GetByIdAsync(int id, int userId)
     {
-        return await _anyCardDbContext.Categories.FindAsync(id);
+        return await _anyCardDbContext.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
     }
     public void Delete(Category category)
     {
