@@ -1,6 +1,4 @@
-﻿
-
-using AnyCard.Application.Interfaces;
+﻿using AnyCard.Application.Interfaces;
 using AnyCard.Domain.Model;
 using AnyCard.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +24,11 @@ public class CardProgressRepository : ICardProgressRepository
     {
         return await _anyCardDbContext.CardProgresses.Where(cp => cp.UserId == userId && cp.CardId == cardId).FirstOrDefaultAsync();
     }
-    public async Task<List<CardProgress>> GetDueForReviewAsync(int userId)
+    public async Task<List<CardProgress>> GetDueForReviewAsync(int userId, int? categoryId)
     {
         return await _anyCardDbContext.CardProgresses.Include(cp => cp.Card).ThenInclude(c => c.Category)
-            .Where(cp => cp.UserId == userId && cp.NextShowtime <= DateTime.UtcNow).ToListAsync();
+            .Where(cp => cp.UserId == userId && cp.NextShowtime <= DateTime.UtcNow
+            && (categoryId == null || cp.Card.CategoryId == categoryId))
+            .ToListAsync();
     }
 }

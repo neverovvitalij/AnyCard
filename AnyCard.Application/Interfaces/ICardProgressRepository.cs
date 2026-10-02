@@ -7,5 +7,5 @@ public interface ICardProgressRepository
     Task AddAsync(CardProgress cardProgress);
     Task<bool> SaveChangesAsync();
     Task<CardProgress?> GetByUserAndCardAsync(int userId, int cardId);
-    Task<List<CardProgress>> GetDueForReviewAsync(int userId);
+    Task<List<CardProgress>> GetDueForReviewAsync(int userId, int? categoryId);
 }

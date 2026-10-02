@@ -50,10 +50,10 @@ public class ProgressController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CardDto>>> GetDueForReview()
+    public async Task<ActionResult<IEnumerable<CardDto>>> GetDueForReview([FromQuery] int? categoryId)
     {
         var userId = User.GetUserId();
-        var cardProgresses = await _progressRepository.GetDueForReviewAsync(userId);
+        var cardProgresses = await _progressRepository.GetDueForReviewAsync(userId, categoryId);
         var cardDtos = cardProgresses.Select(c => new CardDto(c.Card.Id, c.Card.Question, c.Card.Answer, c.Card.Category.Name)).ToList();
 
         return Ok(cardDtos);
