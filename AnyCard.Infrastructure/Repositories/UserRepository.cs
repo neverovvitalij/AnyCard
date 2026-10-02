@@ -13,9 +13,9 @@ public class UserRepository : IUserRepository
         _anyCardDbContext = anyCardDbContext;
     }
 
-    public async Task<User?> GetByUsernameAsync(string username)
+    public async Task<User?> GetByEmailAsync(string email)
     {
-        return await _anyCardDbContext.Users.Where(u => u.Username == username).FirstOrDefaultAsync();
+        return await _anyCardDbContext.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
     }
 
     public async Task AddAsync(User user)

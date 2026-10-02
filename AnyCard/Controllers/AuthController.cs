@@ -28,12 +28,12 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto registerDto)
     {
-        var isAlreadyRegistered = await _userRepository.GetByUsernameAsync(registerDto.Username);
+        var isAlreadyRegistered = await _userRepository.GetByEmailAsync(registerDto.Email);
         if (isAlreadyRegistered != null)
         {
-            return Conflict("Username ist bereits registriert");
+            return Conflict("Email ist bereits registriert");
         }
-        var user = new User { Username = registerDto.Username };
+        var user = new User { Email = registerDto.Email };
 
         var hasher = new PasswordHasher<User>();
         var hashedPassword = hasher.HashPassword(user, registerDto.Password);
@@ -62,7 +62,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponseDto>> Login(LoginDto loginDto)
     {
-        var user = await _userRepository.GetByUsernameAsync(loginDto.Username);
+        var user = await _userRepository.GetByEmailAsync(loginDto.Email);
         if ( user == null)
         {
             return Unauthorized("Ungültiger Benutzername oder Passwort");

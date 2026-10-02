@@ -18,7 +18,7 @@ public class AnyCardDbContext : DbContext
             .IsUnique();
 
         modelBuilder.Entity<User>()
-            .HasIndex(u => u.Username)
+            .HasIndex(u => u.Email)
             .IsUnique();
         
         modelBuilder.Entity<Category>()
