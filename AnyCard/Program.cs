@@ -1,13 +1,14 @@
-using System.Text;
 using AnyCard.Application.Common;
 using AnyCard.Application.Interfaces;
 using AnyCard.Infrastructure.Data;
 using AnyCard.Infrastructure.Repositories;
 using AnyCard.Infrastructure.Services;
+using Mailjet.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace AnyCard
 {
@@ -26,6 +27,16 @@ namespace AnyCard
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICardRepository, CardRepository>();
             builder.Services.AddScoped<ICardProgressRepository, CardProgressRepository>();
+            builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+            builder.Services.AddScoped<IEmailService, MailjetEmailService>();
+
+            builder.Services.Configure<MailjetSettings>(builder.Configuration.GetSection("MailjetSettings"));
+            var mailjet = builder.Configuration.GetSection("MailjetSettings").Get<MailjetSettings>()!;
+            builder.Services.AddHttpClient<IMailjetClient, MailjetClient>(client =>
+            {
+                client.SetDefaultSettings();
+                client.UseBasicAuthentication(mailjet.ApiKey, mailjet.SecretKey);
+            });
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var jwtKey = jwtSettings["Key"];

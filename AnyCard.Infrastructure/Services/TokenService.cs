@@ -46,4 +46,16 @@ public class TokenService : ITokenService
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes);
     }
+
+    public string GenerateResetCode()
+    {
+        const string alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        var codeArray = new char[8];
+        for (int i = 0; i < 8; i++)
+        {
+            var index = RandomNumberGenerator.GetInt32(alphabet.Length);
+            codeArray[i] = alphabet[index];
+        }
+        return new string(codeArray);
+    }
 }

@@ -28,4 +28,20 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     {
         return await _anyCardDbContext.SaveChangesAsync() > 0;
     }
+
+
+    /// <summary>
+    /// Marks all non-revoked refresh tokens of the user as revoked.
+    /// Does not save: the caller must call SaveChangesAsync so the revocation
+    /// is committed together with the other changes (e.g. the new password hash).
+    /// </summary>
+    public async Task RevokeAllForUserAsync(int userId)
+    {
+        var tokens = await _anyCardDbContext.RefreshTokens.Where(t => t.UserId == userId && t.IsRevoked == false).ToListAsync();
+
+        foreach (var token in tokens)
+        {
+            token.IsRevoked = true;
+        }
+    }
 }

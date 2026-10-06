@@ -8,4 +8,5 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public ICollection<Category> Categories { get; set; } = new List<Category>();
+    public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
 }

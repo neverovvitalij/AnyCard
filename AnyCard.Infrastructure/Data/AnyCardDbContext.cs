@@ -9,6 +9,7 @@ public class AnyCardDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<CardProgress> CardProgresses { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
     public AnyCardDbContext(DbContextOptions<AnyCardDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

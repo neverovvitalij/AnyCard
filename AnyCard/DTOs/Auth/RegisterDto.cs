@@ -1,7 +1,10 @@
-﻿namespace AnyCard.DTOs.Auth;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record RegisterDto
-(
+namespace AnyCard.DTOs.Auth;
+
+public record RegisterDto(
+    [EmailAddress, Required, MaxLength(254)]
     string Email,
+    [Required, MinLength(8), MaxLength(100)]
     string Password
 );
