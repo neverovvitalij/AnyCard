@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Text;
 
 namespace AnyCard.Controllers;
@@ -34,6 +35,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [EnableRateLimiting("register")]
     public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto registerDto)
     {
         var email = registerDto.Email.NormalizeEmail();
@@ -70,12 +72,13 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("login")]
     public async Task<ActionResult<AuthResponseDto>> Login(LoginDto loginDto)
     {
         var email = loginDto.Email.NormalizeEmail();
 
         var user = await _userRepository.GetByEmailAsync(email);
-        if ( user == null)
+        if (user == null)
         {
             return Unauthorized("Ungültiger Email oder Passwort");
         }
@@ -108,7 +111,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthResponseDto>> Refresh(RefreshDto refreshDto)
     {
         var existRefreshToken = await _refreshTokenRepository.GetByTokenAsync(refreshDto.RefreshToken);
-        if(existRefreshToken == null || existRefreshToken.ExpirationDate <  DateTime.UtcNow || existRefreshToken.IsRevoked == true)
+        if (existRefreshToken == null || existRefreshToken.ExpirationDate < DateTime.UtcNow || existRefreshToken.IsRevoked == true)
         {
             return Unauthorized();
         }
@@ -135,16 +138,17 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Logout(RefreshDto refreshDto)
     {
         var existRefreshToken = await _refreshTokenRepository.GetByTokenAsync(refreshDto.RefreshToken);
-        if(existRefreshToken != null)
+        if (existRefreshToken != null)
         {
-        existRefreshToken.IsRevoked = true;
-        await _refreshTokenRepository.SaveChangesAsync();
+            existRefreshToken.IsRevoked = true;
+            await _refreshTokenRepository.SaveChangesAsync();
         }
 
         return NoContent();
     }
 
     [HttpPost("forgot-password")]
+    [EnableRateLimiting("forgot")]
     public async Task<ActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
     {
         var email = forgotPasswordDto.Email.NormalizeEmail();
@@ -157,12 +161,12 @@ public class AuthController : ControllerBase
         }
 
         var latestResetCode = await _passwordResetTokenRepository.GetLatestUnusedAsync(user.Id);
-        if(latestResetCode != null && now - latestResetCode.CreatedAt < PasswordResetPolicy.MinRequestInterval)
+        if (latestResetCode != null && now - latestResetCode.CreatedAt < PasswordResetPolicy.MinRequestInterval)
         {
             return NoContent();
         }
 
-        if(latestResetCode != null)
+        if (latestResetCode != null)
         {
             latestResetCode.IsUsed = true;
         }
@@ -183,6 +187,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("reset-password")]
+    [EnableRateLimiting("reset")]
     public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
     {
         var email = resetPasswordDto.Email.NormalizeEmail();
@@ -203,8 +208,8 @@ public class AuthController : ControllerBase
         var entered = Encoding.UTF8.GetBytes(resetPasswordDto.Code.Trim().ToUpperInvariant());
         var stored = Encoding.UTF8.GetBytes(latestResetCode.Code);
         bool isMatch = CryptographicOperations.FixedTimeEquals(entered, stored);
-        
-        if(!isMatch)
+
+        if (!isMatch)
         {
             latestResetCode.FailedAttempts++;
             await _passwordResetTokenRepository.SaveChangesAsync();

@@ -8,12 +8,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Threading.RateLimiting;
 using System.Text;
 
 namespace AnyCard
 {
     public class Program
     {
+        private static RateLimitPartition<string> Fixed(HttpContext ctx, int limit, TimeSpan window) =>
+            RateLimitPartition.GetFixedWindowLimiter(
+            ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = limit, Window = window, QueueLimit = 0 });
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -60,6 +66,21 @@ namespace AnyCard
                 };
             });
 
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                options.AddPolicy("login", ctx => Fixed(ctx, 10, TimeSpan.FromMinutes(1)));
+                options.AddPolicy("register", ctx => Fixed(ctx, 5, TimeSpan.FromMinutes(10)));
+                options.AddPolicy("forgot", ctx => Fixed(ctx, 5, TimeSpan.FromMinutes(10)));
+                options.AddPolicy("reset", ctx => Fixed(ctx, 10, TimeSpan.FromMinutes(10)));
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -94,6 +115,8 @@ namespace AnyCard
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+
+            app.UseForwardedHeaders();
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -101,6 +124,8 @@ namespace AnyCard
             }
 
             app.UseHttpsRedirection();
+
+            app.UseRateLimiter();
 
             app.UseAuthentication();
 
