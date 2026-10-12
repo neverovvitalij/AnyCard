@@ -17,9 +17,15 @@ public class CardRepository : ICardRepository
     {
         await _anyCardDbContext.Cards.AddAsync(card);
     }
-    public async Task<List<Card>> GetAllAsync(int userId)
+    public async Task<List<Card>> GetAllAsync(int userId, int? categoryId)
     {
-        return await _anyCardDbContext.Cards.Include(c => c.Category).Where(c => c.UserId == userId).ToListAsync();
+        return await _anyCardDbContext.Cards.Include(c => c.Category)
+            .AsNoTracking()
+            .Where(c => c.UserId == userId && (categoryId == null || c.CategoryId == categoryId))
+            .OrderBy(c => c.Category.Name)
+            .ThenBy(c => c.Question)
+            .ThenBy(c => c.Id)
+            .ToListAsync();
     }
     public async Task<Card?> GetByIdAsync(int id, int userId)
     {

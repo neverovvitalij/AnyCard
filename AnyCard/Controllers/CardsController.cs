@@ -26,10 +26,10 @@ public class CardsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CardDto>>> GetCards()
+    public async Task<ActionResult<IEnumerable<CardDto>>> GetCards([FromQuery] int? categoryId)
     {
         var userId = User.GetUserId();
-        var cards = await _cardRepository.GetAllAsync(userId);
+        var cards = await _cardRepository.GetAllAsync(userId, categoryId);
 
         var cardsDto = cards.Select(c => new CardDto(c.Id, c.Question, c.Answer, c.Category.Name)).ToList();
         return Ok(cardsDto);
