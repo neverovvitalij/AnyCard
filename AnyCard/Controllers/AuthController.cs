@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace AnyCard.Controllers;
 
@@ -51,8 +52,16 @@ public class AuthController : ControllerBase
         var hashedPassword = hasher.HashPassword(user, registerDto.Password);
 
         user.PasswordHash = hashedPassword;
+        try
+        {
         await _userRepository.AddAsync(user);
         await _userRepository.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict("Email ist bereits registriert");
+
+        }
 
         var accessToken = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken();
