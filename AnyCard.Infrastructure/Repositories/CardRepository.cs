@@ -41,4 +41,8 @@ public class CardRepository : ICardRepository
     {
         _anyCardDbContext.Cards.Remove(card);
     }
+    public async Task<int> GetCardsCountAsync(int userId)
+    {
+        return await _anyCardDbContext.Cards.CountAsync(c => c.UserId == userId);
+    }
 }

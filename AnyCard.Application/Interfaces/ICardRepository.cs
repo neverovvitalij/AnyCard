@@ -9,5 +9,5 @@ public interface ICardRepository
     Task<Card?> GetByIdAsync(int id, int userId);
     Task<bool> SaveChangesAsync();
     void Delete(Card card);
-
+    Task<int> GetCardsCountAsync(int userId);
 }

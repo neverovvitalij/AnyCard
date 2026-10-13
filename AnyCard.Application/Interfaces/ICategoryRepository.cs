@@ -10,4 +10,5 @@ public interface ICategoryRepository
     Task<Category?> GetByIdAsync(int id, int userId);
     void Delete(Category category);
     Task<bool> SaveChangesAsync();
+    Task<int> GetCategoriesCountAsync(int userId);
 }

@@ -34,4 +34,8 @@ public class CategoryRepository : ICategoryRepository
     {
         return await _anyCardDbContext.SaveChangesAsync() > 0;
     }
+    public async Task<int> GetCategoriesCountAsync(int userId)
+    {
+        return await _anyCardDbContext.Categories.CountAsync(c => c.UserId == userId);
+    }
 }
