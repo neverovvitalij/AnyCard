@@ -195,6 +195,37 @@ namespace AnyCard.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("AnyCard.Domain.Model.UserSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeSpan>("AgainInterval")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("EasyInterval")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("GoodInterval")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("HardInterval")
+                        .HasColumnType("interval");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserSettings");
+                });
+
             modelBuilder.Entity("AnyCard.Domain.Model.Card", b =>
                 {
                     b.HasOne("AnyCard.Domain.Model.Category", "Category")
@@ -259,6 +290,17 @@ namespace AnyCard.Infrastructure.Migrations
                 {
                     b.HasOne("AnyCard.Domain.Model.User", "User")
                         .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AnyCard.Domain.Model.UserSettings", b =>
+                {
+                    b.HasOne("AnyCard.Domain.Model.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

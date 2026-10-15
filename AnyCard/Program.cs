@@ -35,6 +35,7 @@ namespace AnyCard
             builder.Services.AddScoped<ICardProgressRepository, CardProgressRepository>();
             builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             builder.Services.AddScoped<IEmailService, MailjetEmailService>();
+            builder.Services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
 
             builder.Services.Configure<MailjetSettings>(builder.Configuration.GetSection("MailjetSettings"));
             var mailjet = builder.Configuration.GetSection("MailjetSettings").Get<MailjetSettings>()!;

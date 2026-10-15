@@ -2,6 +2,7 @@
 using AnyCard.Domain.Model;
 
 namespace AnyCard.Infrastructure.Data;
+
 public class AnyCardDbContext : DbContext
 {
     public DbSet<Card> Cards { get; set; }
@@ -10,6 +11,7 @@ public class AnyCardDbContext : DbContext
     public DbSet<CardProgress> CardProgresses { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+    public DbSet<UserSettings> UserSettings { get; set; }
     public AnyCardDbContext(DbContextOptions<AnyCardDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,9 +23,12 @@ public class AnyCardDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
-        
+
         modelBuilder.Entity<Category>()
-            .HasIndex(c => new { c.UserId, c.Name})
+            .HasIndex(c => new { c.UserId, c.Name })
+            .IsUnique();
+        modelBuilder.Entity<UserSettings>()
+            .HasIndex(us => us.UserId)
             .IsUnique();
     }
 }

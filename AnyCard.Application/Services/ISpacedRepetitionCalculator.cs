@@ -1,17 +1,19 @@
-﻿
+﻿using AnyCard.Domain.Common;
 using AnyCard.Domain.Enums;
+using AnyCard.Domain.Model;
 
 namespace AnyCard.Application.Services;
+
 public class SpacedRepetitionCalculator
 {
     private const double GrowthFactor = 2.0;
-    public static TimeSpan CalculateNextReview(UserRating userRating, int currentViewCounter) => userRating switch
+    public static TimeSpan CalculateNextReview(UserRating userRating, int currentViewCounter, UserSettings? userSettings) => userRating switch
     {
-        UserRating.Again => TimeSpan.FromMinutes(1),
-        UserRating.Hard => TimeSpan.FromHours(2) * Math.Pow(GrowthFactor, currentViewCounter),
-        UserRating.Good => TimeSpan.FromDays(2) * Math.Pow(GrowthFactor, currentViewCounter),
-        UserRating.Easy => TimeSpan.FromDays(6) * Math.Pow(GrowthFactor, currentViewCounter),
+        UserRating.Again => userSettings?.AgainInterval ?? ReviewIntervalDefaults.Again,
+        UserRating.Hard => (userSettings?.HardInterval ?? ReviewIntervalDefaults.Hard) * Math.Pow(GrowthFactor, currentViewCounter),
+        UserRating.Good => (userSettings?.GoodInterval ?? ReviewIntervalDefaults.Good) * Math.Pow(GrowthFactor, currentViewCounter),
+        UserRating.Easy => (userSettings?.EasyInterval ?? ReviewIntervalDefaults.Easy) * Math.Pow(GrowthFactor, currentViewCounter),
         _ => throw new ArgumentOutOfRangeException()
     };
-    
+
 }

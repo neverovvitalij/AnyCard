@@ -18,12 +18,15 @@ public class ProgressController : ControllerBase
     private readonly ICardProgressRepository _progressRepository;
     private readonly ICardRepository _cardRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IUserSettingsRepository _userSettingsRepository;
     private const int PageSize = 9;
-    public ProgressController(ICardProgressRepository cardProgressRepository, ICardRepository cardRepository, ICategoryRepository categoryRepository)
+    public ProgressController(ICardProgressRepository cardProgressRepository, ICardRepository cardRepository,
+        ICategoryRepository categoryRepository, IUserSettingsRepository userSettingsRepository)
     {
         _progressRepository = cardProgressRepository;
         _cardRepository = cardRepository;
         _categoryRepository = categoryRepository;
+        _userSettingsRepository = userSettingsRepository;
     }
 
     [HttpPut]
@@ -36,10 +39,12 @@ public class ProgressController : ControllerBase
             return NotFound("Die Karte wurde nicht gefunden");
         }
 
+        var userSettings = await _userSettingsRepository.GetByUserIdAsync(userId);
+
         TimeSpan interval;
         try
         {
-            interval = SpacedRepetitionCalculator.CalculateNextReview(reviewCardDto.UserRating, cardProgress.ViewCounter);
+            interval = SpacedRepetitionCalculator.CalculateNextReview(reviewCardDto.UserRating, cardProgress.ViewCounter, userSettings);
         }
         catch (ArgumentOutOfRangeException)
         {
