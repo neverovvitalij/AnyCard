@@ -36,6 +36,12 @@ public class SettingsController : ControllerBase
     [HttpPut]
     public async Task<ActionResult<UserSettingsDto>> ChangeUserSettings(UserSettingsDto userSettingsDto)
     {
+        var intervals = new[] { userSettingsDto.Again, userSettingsDto.Hard, userSettingsDto.Good, userSettingsDto.Easy };
+        if(intervals.Any(i => i < ReviewIntervalLimits.MinSetting || i > ReviewIntervalLimits.MaxSetting))
+        {
+            return BadRequest("Das Intervall muss zwischen 1 Minute und 30 Tagen liegen");
+        }
+
         var userId = User.GetUserId();
         var userSettings = await _userSettingsRepository.GetByUserIdAsync(userId);
 
