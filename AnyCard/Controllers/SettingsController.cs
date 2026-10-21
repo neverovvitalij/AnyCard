@@ -69,5 +69,9 @@ public class SettingsController : ControllerBase
         return Ok(userSettingsDto);
     }
 
-    // TODO: Standardwerte vom Server holen (GET api/settings/defaults)
+    [HttpGet("defaults")]
+    public ActionResult<UserSettingsDto> GetDefaults()
+    {
+        return Ok(new UserSettingsDto(ReviewIntervalDefaults.Again, ReviewIntervalDefaults.Hard, ReviewIntervalDefaults.Good, ReviewIntervalDefaults.Easy));
+    }
 }
