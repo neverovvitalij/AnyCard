@@ -22,17 +22,17 @@ public class AuthController : ControllerBase
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly JwtSettings _jwtSettings;
     private readonly IPasswordResetTokenRepository _passwordResetTokenRepository;
-    private readonly IEmailService _emailService;
+    private readonly IEmailQueue _emailQueue;
 
     public AuthController(IUserRepository userRepository, ITokenService tokenService, IRefreshTokenRepository refreshTokenRepository,
-        IOptions<JwtSettings> jwtSettings, IPasswordResetTokenRepository passwordResetTokenRepository, IEmailService emailService)
+        IOptions<JwtSettings> jwtSettings, IPasswordResetTokenRepository passwordResetTokenRepository, IEmailQueue emailService)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
         _refreshTokenRepository = refreshTokenRepository;
         _jwtSettings = jwtSettings.Value;
         _passwordResetTokenRepository = passwordResetTokenRepository;
-        _emailService = emailService;
+        _emailQueue = emailService;
     }
 
     [HttpPost("register")]
@@ -191,7 +191,8 @@ public class AuthController : ControllerBase
         await _passwordResetTokenRepository.AddAsync(resetCode);
         await _passwordResetTokenRepository.SaveChangesAsync();
 
-        await _emailService.SendEmailAsync(email, "Passwort zurücksetzen", $"Ihr Passwort-Zurücksetzungs-Code lautet: {resetCode.Code}, Sie haben {(int)PasswordResetPolicy.TokenLifetime.TotalMinutes} Minuten Zeit, um Ihr Passwort zurückzusetzen.");
+        await _emailQueue.EnqueueAsync(new EmailMessage(email, "Passwort zurücksetzen", $"Ihr Passwort-Zurücksetzungs-Code lautet:" +
+            $" {resetCode.Code}, Sie haben {(int)PasswordResetPolicy.TokenLifetime.TotalMinutes} Minuten Zeit, um Ihr Passwort zurückzusetzen."));
         return NoContent();
     }
 

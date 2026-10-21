@@ -68,4 +68,6 @@ public class SettingsController : ControllerBase
 
         return Ok(userSettingsDto);
     }
+
+    // TODO: Standardwerte vom Server holen (GET api/settings/defaults)
 }

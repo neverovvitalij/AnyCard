@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Threading.RateLimiting;
 using System.Text;
+using AnyCard.BackgroundServices;
 
 namespace AnyCard
 {
@@ -36,6 +37,9 @@ namespace AnyCard
             builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             builder.Services.AddScoped<IEmailService, MailjetEmailService>();
             builder.Services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
+            builder.Services.AddSingleton<EmailQueue>();
+            builder.Services.AddSingleton<IEmailQueue>(sp => sp.GetRequiredService<EmailQueue>());
+            builder.Services.AddHostedService<EmailBackgroundService>();
 
             builder.Services.Configure<MailjetSettings>(builder.Configuration.GetSection("MailjetSettings"));
             var mailjet = builder.Configuration.GetSection("MailjetSettings").Get<MailjetSettings>()!;
