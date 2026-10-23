@@ -25,14 +25,14 @@ public class AuthController : ControllerBase
     private readonly IEmailQueue _emailQueue;
 
     public AuthController(IUserRepository userRepository, ITokenService tokenService, IRefreshTokenRepository refreshTokenRepository,
-        IOptions<JwtSettings> jwtSettings, IPasswordResetTokenRepository passwordResetTokenRepository, IEmailQueue emailService)
+        IOptions<JwtSettings> jwtSettings, IPasswordResetTokenRepository passwordResetTokenRepository, IEmailQueue emailQueue)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
         _refreshTokenRepository = refreshTokenRepository;
         _jwtSettings = jwtSettings.Value;
         _passwordResetTokenRepository = passwordResetTokenRepository;
-        _emailQueue = emailService;
+        _emailQueue = emailQueue;
     }
 
     [HttpPost("register")]
